@@ -18,6 +18,7 @@ public:
 
     void clear_screen() override;
     void set_screen(PRender::FRECT screen_dst) override;
+    void set_screen_source(PRender::RECT screen_src) override;
     int  set_shader(int mode) override;
     int  set_vsync(bool set) override;
     void update(void* buffer8) override;
@@ -33,7 +34,8 @@ private:
     SDL_Texture* ui_texture = NULL;
     SDL_Surface* ui_surface = NULL;
 
-    SDL_Rect screen_dest;
+    PRender::FRECT screen_dest = {0.f, 0.f, 1.f, 1.f};
+    PRender::RECT screen_src = {0, 0, 0, 0};
     
     struct RenderOptions {
         PRender::FRECT src, dst;

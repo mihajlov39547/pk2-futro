@@ -42,13 +42,13 @@ void PSdl::clear_screen() {
 
 void PSdl::set_screen(PRender::FRECT screen_dst) {
 
-    int w, h;
-    PRender::get_window_size(&w, &h);
+    screen_dest = screen_dst;
 
-    screen_dest.x = screen_dst.x * w;
-    screen_dest.y = screen_dst.y * h;
-    screen_dest.w = screen_dst.w * w;
-    screen_dest.h = screen_dst.h * h;
+}
+
+void PSdl::set_screen_source(PRender::RECT screen_src) {
+
+    this->screen_src = screen_src;
 
 }
 
@@ -98,10 +98,26 @@ void PSdl::update(void* _buffer8) {
 
     SDL_RenderClear(renderer);
 
-    SDL_RenderCopy(renderer, texture, NULL, &screen_dest);
-    
     int w, h;
-    SDL_GetRendererOutputSize(renderer, &w, &h);
+    if (SDL_GetRendererOutputSize(renderer, &w, &h) != 0)
+        PRender::get_window_size(&w, &h);
+
+    SDL_Rect dst;
+    dst.x = screen_dest.x * w;
+    dst.y = screen_dest.y * h;
+    dst.w = screen_dest.w * w;
+    dst.h = screen_dest.h * h;
+
+    SDL_Rect src = {screen_src.x, screen_src.y, screen_src.w, screen_src.h};
+    if (src.w <= 0 || src.h <= 0) {
+        src.x = 0;
+        src.y = 0;
+        src.w = buffer8->w;
+        src.h = buffer8->h;
+    }
+
+    SDL_RenderCopy(renderer, texture, &src, &dst);
+
     float prop_x = (float)w;
     float prop_y = (float)h;
     

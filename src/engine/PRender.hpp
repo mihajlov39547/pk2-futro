@@ -29,6 +29,7 @@ class Renderer {
 
 	virtual void clear_screen() = 0;
 	virtual void set_screen(FRECT screen_dst) = 0;
+	virtual void set_screen_source(RECT screen_src) {}
 	virtual int  set_shader(int mode) = 0;
 	virtual int  set_vsync(bool set) = 0;
 	virtual void update(void* _buffer8) = 0;
@@ -63,6 +64,7 @@ int  set_shader(int mode);
 
 void set_screen_fill(bool set);
 void adjust_screen();
+void get_screen_geometry(RECT* src, FRECT* dst);
 void set_fullscreen(bool set);
 void set_window_size(int w, int h);
 void get_window_size(int* w, int* h);

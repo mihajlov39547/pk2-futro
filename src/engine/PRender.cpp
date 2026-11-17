@@ -32,6 +32,7 @@ static float cover_width, cover_height;
 
 static bool screen_fill = false;
 static FRECT screen_dest = {0.f, 0.f, 1.f, 1.f};
+static RECT screen_src = {0, 0, 0, 0};
 
 static const char* window_name;
 static SDL_Window* window = NULL;
@@ -58,6 +59,32 @@ void set_screen_fill(bool set) {
 
 	screen_fill = set;
 	adjust_screen();
+
+}
+
+static void update_screen_source() {
+
+	int off_x, off_y;
+	PDraw::get_offset(&off_x, &off_y);
+
+	int buf_w, buf_h;
+	PDraw::get_buffer_size(&buf_w, &buf_h);
+
+	screen_src.x = off_x;
+	screen_src.y = off_y;
+	screen_src.w = buf_w - 2 * off_x;
+	screen_src.h = buf_h - 2 * off_y;
+
+}
+
+void get_screen_geometry(RECT* src, FRECT* dst) {
+
+	update_screen_source();
+
+	if (src)
+		*src = screen_src;
+	if (dst)
+		*dst = screen_dest;
 
 }
 
@@ -357,6 +384,8 @@ void terminate() {
 
 void update(void* _buffer8) {
 
+	update_screen_source();
+	renderer->set_screen_source(screen_src);
 	renderer->update(_buffer8);
 
 }

@@ -424,11 +424,9 @@ void UpdateMouse(bool keyMove, bool relative) {
 	int sw, sh;
 	PRender::get_window_size(&sw, &sh);
 
-	int bw, bh;
-	PDraw::get_buffer_size(&bw, &bh);
-
-	int off_x, off_y;
-	PDraw::get_offset(&off_x, &off_y);
+	PRender::RECT src;
+	PRender::FRECT dst;
+	PRender::get_screen_geometry(&src, &dst);
 
 	if (!relative || PUtils::Is_Mobile()) {
 		SDL_SetRelativeMouseMode(SDL_FALSE);
@@ -436,12 +434,8 @@ void UpdateMouse(bool keyMove, bool relative) {
 		int tmpx, tmpy;
 		mouse_key = SDL_GetMouseState(&tmpx, &tmpy);
 
-		//Problem with fitScreen
-		tmpx *= float(bw) / sw;
-		tmpy *= float(bh) / sh;
-
-		tmpx -= off_x;
-		tmpy -= off_y;
+		tmpx = (tmpx - dst.x * sw) * src.w / (dst.w * sw);
+		tmpy = (tmpy - dst.y * sh) * src.h / (dst.h * sh);
 
 		// Mouse moved
 		if (abs(last_x - tmpx) > 0 || abs(last_y - tmpy) > 0)
@@ -496,10 +490,10 @@ void UpdateMouse(bool keyMove, bool relative) {
 	}
 
 	// set limits
-	if (mouse_x < -off_x) mouse_x = -off_x;
-	if (mouse_x > bw - off_x - 19) mouse_x = bw - off_x - 19;
-	if (mouse_y < -off_y) mouse_y = -off_y;
-	if (mouse_y > bh - off_y - 19) mouse_y = bh - off_y - 19;
+	if (mouse_x < 0) mouse_x = 0;
+	if (mouse_x > src.w - 19) mouse_x = src.w - 19;
+	if (mouse_y < 0) mouse_y = 0;
+	if (mouse_y > src.h - 19) mouse_y = src.h - 19;
 
 }
 
